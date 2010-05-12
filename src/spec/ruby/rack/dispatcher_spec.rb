@@ -27,7 +27,7 @@ describe DefaultServletDispatcher do
       @rack_factory.should_receive(:finishedWithApplication).with(application)
       application.should_receive(:call).and_return rack_response
       rack_response.should_receive(:respond)
-
+      request.should_receive(:getAttribute).with("async").and_return(nil)
       @dispatcher.process(request, response)
     end
 
@@ -67,5 +67,22 @@ describe DefaultServletDispatcher do
       res.should_receive(:sendError).with(500)
       @dispatcher.process(req, res)
     end
+    
+    it "should handle async request process calls" do
+      application = mock("application")
+      request = mock("request")
+      response = mock("response")
+      rack_response = mock("rack response")
+
+      @rack_factory.should_receive(:getApplication).and_return(application)
+      @rack_factory.should_receive(:finishedWithApplication).with(application)
+      application.should_receive(:call).and_return nil
+      request.should_receive(:getAttribute).with("async").and_return(true)
+      #request.should_receive(:isAsyncSupported).and_return(true)
+      request.should_receive(:startAsync).and_return(nil)
+
+      @dispatcher.process(request, response)      
+    end
+    
   end
 end

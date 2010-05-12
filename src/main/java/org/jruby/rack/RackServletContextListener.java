@@ -11,11 +11,13 @@ import org.jruby.rack.servlet.ServletRackContext;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+//import javax.servlet.annotation.WebListener;
 
 /**
  * Web application lifecycle listener.
  * @author nicksieger
  */
+//@WebListener
 public class RackServletContextListener implements ServletContextListener {
     public static final String FACTORY_KEY = "rack.factory";
     private final RackApplicationFactory factory;

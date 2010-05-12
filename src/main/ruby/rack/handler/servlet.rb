@@ -16,7 +16,19 @@ module Rack
       end
 
       def call(servlet_env)
-        JRuby::Rack::Response.new(@rack_app.call(create_env(servlet_env)))
+        env = create_env(servlet_env)
+        res = @rack_app.call(env)
+        p "environement from servlet.rb #{env.inspect}"
+        unless env[:async] == true
+          response = JRuby::Rack::Response.new(res)
+          return response
+        else
+          req = env['java.servlet_request']
+#          if req.isAsyncSupported
+            req.setAttribute("async", true)
+            p "SET ASYNC ATTRIBUTE ON REQUEST"
+#          end
+        end
       end
 
       def create_env(servlet_env)
@@ -34,7 +46,7 @@ module Rack
         jruby.rack.version jruby.rack.jruby.version jruby.rack.rack.release)
 
       REQUEST = %w(CONTENT_TYPE CONTENT_LENGTH REQUEST_METHOD SCRIPT_NAME REQUEST_URI
-        PATH_INFO QUERY_STRING SERVER_NAME REMOTE_HOST REMOTE_ADDR REMOTE_USER SERVER_PORT)
+        PATH_INFO QUERY_STRING SERVER_NAME REMOTE_HOST REMOTE_ADDR REMOTE_USER SERVER_PORT ASYNC_CALLBACK)
 
       def initialize(servlet_env)
         @env = populate(LazyEnv.new(servlet_env).to_hash)
@@ -175,6 +187,18 @@ module Rack
 
       def load__SERVER_PORT(env)
         env["SERVER_PORT"] = @servlet_env.getServerPort.to_s
+      end
+      def load__ASYNC_CALLBACK(env)
+        #TODO: Need to add callbacks for timeouts
+        env[:async_callback] = lambda do |s,h,b|       
+          rackResponse = JRuby::Rack::Response.new [s,h,b]
+          req =  @servlet_env.getRequest
+          if req.isAsyncStarted
+            asyncContext = req.getAsyncContext
+            rackResponse.respond(Java::org.jruby.rack.servlet.ServletRackResponseEnvironment.new(asyncContext.getResponse))
+            asyncContext.complete
+          end          
+        end
       end
     end
   end

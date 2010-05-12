@@ -197,7 +197,7 @@ describe Rack::Handler::Servlet, "create_env" do
                :getServerPort => 80,
                :getRemoteHost => "localhost",
                :getRemoteAddr => "127.0.0.1",
-               :getRemoteUser => "admin"
+               :getRemoteUser => "admin"               
              })
 
     env = @servlet.create_env @env
@@ -310,5 +310,19 @@ describe Rack::Handler::Servlet, "call" do
 
     response = @servlet.call(servlet_env)
     response.should respond_to(:respond)
+  end
+  
+  it "should set the attribute for async if an async call occured" do
+    env = {:async => true}
+    @servlet.should_receive(:create_env).and_return(env)
+
+    servlet_env = mock("servlet request")
+    @app.should_receive(:call).and_return(nil)
+    
+    env['java.servlet_request'] = servlet_env 
+    servlet_env.should_receive(:isAsyncSupported).and_return(true)
+    servlet_env.should_receive(:setAttribute).with("async", true)
+    response = @servlet.call(servlet_env)
+    response.should be_nil    
   end
 end

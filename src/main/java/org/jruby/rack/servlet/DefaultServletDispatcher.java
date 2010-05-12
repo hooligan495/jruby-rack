@@ -11,11 +11,17 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.AsyncContext;
 
+import org.jruby.javasupport.JavaEmbedUtils;
+import org.jruby.runtime.builtin.IRubyObject;
 import org.jruby.rack.RackApplication;
 import org.jruby.rack.RackApplicationFactory;
 import org.jruby.rack.RackContext;
 import org.jruby.rack.RackEnvironment;
+import org.jruby.rack.RackResponse;
+
+
 
 /**
  *
@@ -27,14 +33,29 @@ public class DefaultServletDispatcher implements ServletDispatcher {
     public DefaultServletDispatcher(RackContext servletContext) {
         this.context = servletContext;
     }
-
+    
     public void process(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
         final RackApplicationFactory rackFactory = context.getRackFactory();
         RackApplication app = null;
         try {
-            app = rackFactory.getApplication();
-            app.call(new ServletRackEnvironment(request)).respond(new ServletRackResponseEnvironment(response));
+            app = rackFactory.getApplication();            
+            RackEnvironment env = new ServletRackEnvironment(request);
+            RackResponse rack_resp = app.call(env);
+            Boolean isAsync = (Boolean)env.getAttribute("async");
+            System.out.println("isAsync " + isAsync);
+            if ((isAsync == null) || (isAsync.booleanValue() == false)) {
+              rack_resp.respond(new ServletRackResponseEnvironment(response));
+            } else {
+              // mark the request asynchronous and properly clean up.
+              //if (request.isAsyncSupported() == true){
+                 AsyncContext ctx = request.startAsync();
+              //} else {
+                System.out.println("Here3");
+                //we were asked to do async processing when we don't support it.
+                //throw new Exception("Request is within the scope of a filter or servlet that does not support asynchronous operations");
+              //}              
+            }
         } catch (Exception re) {
             handleException(re, rackFactory, request, response);
         } finally {
@@ -42,7 +63,7 @@ public class DefaultServletDispatcher implements ServletDispatcher {
                 rackFactory.finishedWithApplication(app);
             }
         }
-    }
+    }    
 
     private void handleException(Exception re, RackApplicationFactory rackFactory,
             HttpServletRequest request, HttpServletResponse response)

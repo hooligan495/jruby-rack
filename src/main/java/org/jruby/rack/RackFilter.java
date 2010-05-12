@@ -14,6 +14,8 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
@@ -27,6 +29,7 @@ import org.jruby.rack.servlet.ServletRackContext;
  *
  * @author nicksieger
  */
+@WebFilter(urlPatterns="/*", asyncSupported=true)
 public class RackFilter implements Filter {
     private ServletDispatcher dispatcher;
 
@@ -49,12 +52,12 @@ public class RackFilter implements Filter {
         HttpServletRequest    httpRequest  = maybeAppendHtmlToPath(request);
         HttpServletResponse   httpResponse = (HttpServletResponse) response;
         ResponseStatusCapture capture      = new ResponseStatusCapture(httpResponse);
-        chain.doFilter(httpRequest, capture);
-        if (capture.isError()) {
-            httpResponse.reset();
+        //chain.doFilter(httpRequest, capture);
+        //if (capture.isError()) {
+            //httpResponse.reset();
             request.setAttribute(RackEnvironment.DYNAMIC_REQS_ONLY, Boolean.TRUE);
             dispatcher.process((HttpServletRequest) request, httpResponse);
-        }
+        //}
     }
 
     public void destroy() {
