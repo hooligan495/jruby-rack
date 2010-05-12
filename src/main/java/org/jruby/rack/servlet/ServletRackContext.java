@@ -18,6 +18,12 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.descriptor.JspConfigDescriptor;
+import javax.servlet.SessionTrackingMode;
+import javax.servlet.SessionCookieConfig;
+import javax.servlet.FilterRegistration;
+import javax.servlet.Filter;
+import javax.servlet.ServletRegistration;
 
 import org.jruby.util.SafePropertyAccessor;
 import static java.lang.System.out;
@@ -183,4 +189,108 @@ public class ServletRackContext implements RackContext, ServletContext {
     public String getServletContextName() {
         return context.getServletContextName();
     }
+    
+    public void declareRoles(String... roles){
+      context.declareRoles(roles);
+    }
+    
+    public ClassLoader getClassLoader(){
+      return context.getClassLoader();
+    }
+    
+    public JspConfigDescriptor getJspConfigDescriptor() {
+      return context.getJspConfigDescriptor();
+    }
+    
+    public <T extends java.util.EventListener>T createListener(java.lang.Class<T> clazz) throws javax.servlet.ServletException{
+      return context.createListener(clazz);      
+    }
+    
+    public void addListener(java.lang.Class<? extends java.util.EventListener> listenerClass) {
+      context.addListener(listenerClass);
+    }
+    
+    public <T extends java.util.EventListener>void addListener(T t) {
+      context.addListener(t);
+    }
+    
+    public void addListener(String listener){
+      context.addListener(listener);
+    }
+    
+    public java.util.Set<SessionTrackingMode>  getEffectiveSessionTrackingModes(){
+      return context.getEffectiveSessionTrackingModes();
+    }
+    
+    public java.util.Set<SessionTrackingMode> getDefaultSessionTrackingModes(){
+      return context.getDefaultSessionTrackingModes();
+    }
+    
+    public void setSessionTrackingModes(java.util.Set<javax.servlet.SessionTrackingMode> modes){
+      context.setSessionTrackingModes(modes);
+    }
+        
+    public SessionCookieConfig getSessionCookieConfig(){
+      return context.getSessionCookieConfig();
+    }
+    public FilterRegistration getFilterRegistration(String registration){
+      return getFilterRegistration(registration);
+    }
+    
+    public java.util.Map<java.lang.String,? extends FilterRegistration> getFilterRegistrations(){
+      return context.getFilterRegistrations();
+    }
+    
+    public <T extends Filter>T createFilter(java.lang.Class<T> clazz) throws javax.servlet.ServletException{
+      return context.createFilter(clazz);
+    }
+    
+    public FilterRegistration.Dynamic addFilter(String name, Class<? extends javax.servlet.Filter> filterClass) {
+      return context.addFilter(name, filterClass);
+    }
+    
+    public  FilterRegistration.Dynamic addFilter(String filterName, Filter filter) {
+      return context.addFilter(filterName, filter);
+    }
+    
+    public FilterRegistration.Dynamic addFilter(String filterName, String className) {
+      return context.addFilter(filterName, className);
+    }
+    
+    public ServletRegistration 	getServletRegistration(java.lang.String servletName) {
+      return context.getServletRegistration(servletName);
+    }
+    
+    public java.util.Map<java.lang.String,? extends ServletRegistration> 	getServletRegistrations() {
+      return context.getServletRegistrations();
+    }
+    
+    public <T extends Servlet> T createServlet(Class<T> clazz) throws javax.servlet.ServletException{
+    	  return context.createServlet(clazz);
+    }
+    
+    public ServletRegistration.Dynamic 	addServlet(String servletName, Class<? extends Servlet> servletClass) {
+      return context.addServlet(servletName, servletClass);
+    }
+    
+    public ServletRegistration.Dynamic 	addServlet(java.lang.String servletName, Servlet servlet) {
+      return context.addServlet(servletName, servlet);
+    }
+    
+    public  ServletRegistration.Dynamic 	addServlet(java.lang.String servletName, java.lang.String className) {
+      return context.addServlet(servletName, className);
+    }
+    
+    public boolean setInitParameter(String name, String value){
+      return context.setInitParameter(name,value);
+    }
+    
+    public int 	getEffectiveMinorVersion() {
+      return context.getEffectiveMinorVersion();
+    }
+    
+    public int 	getEffectiveMajorVersion() {
+      return context.getEffectiveMajorVersion();
+    }
+    
 }

@@ -68,5 +68,5 @@ public class ServletRackEnvironment extends HttpServletRequestWrapper
             requestURI.append("?").append(super.getQueryString());
         }
         return requestURI.toString();
-    }
+    }    
 }
