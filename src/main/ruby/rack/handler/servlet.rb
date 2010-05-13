@@ -18,16 +18,15 @@ module Rack
       def call(servlet_env)
         env = create_env(servlet_env)
         res = @rack_app.call(env)
-        p "environement from servlet.rb #{env.inspect}"
         unless env[:async] == true
           response = JRuby::Rack::Response.new(res)
           return response
         else
           req = env['java.servlet_request']
-#          if req.isAsyncSupported
+          if req.isAsyncSupported
             req.setAttribute("async", true)
-            p "SET ASYNC ATTRIBUTE ON REQUEST"
-#          end
+            #If async is NOT supported.. then the DefaultServletDispatcher will handle things for us.
+          end
         end
       end
 
@@ -189,7 +188,7 @@ module Rack
         env["SERVER_PORT"] = @servlet_env.getServerPort.to_s
       end
       def load__ASYNC_CALLBACK(env)
-        #TODO: Need to add callbacks for timeouts
+        #TODO: Need to add Listeners for timeouts
         env[:async_callback] = lambda do |s,h,b|       
           rackResponse = JRuby::Rack::Response.new [s,h,b]
           req =  @servlet_env.getRequest

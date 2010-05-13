@@ -78,7 +78,7 @@ describe DefaultServletDispatcher do
       @rack_factory.should_receive(:finishedWithApplication).with(application)
       application.should_receive(:call).and_return nil
       request.should_receive(:getAttribute).with("async").and_return(true)
-      #request.should_receive(:isAsyncSupported).and_return(true)
+      request.should_receive(:isAsyncSupported).and_return(true)
       request.should_receive(:startAsync).and_return(nil)
 
       @dispatcher.process(request, response)      

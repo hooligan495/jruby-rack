@@ -14,7 +14,7 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
+//import javax.servlet.annotation.WebFilter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -29,7 +29,7 @@ import org.jruby.rack.servlet.ServletRackContext;
  *
  * @author nicksieger
  */
-@WebFilter(urlPatterns="/*", asyncSupported=true)
+//@WebFilter(urlPatterns="/*", asyncSupported=true)
 public class RackFilter implements Filter {
     private ServletDispatcher dispatcher;
 

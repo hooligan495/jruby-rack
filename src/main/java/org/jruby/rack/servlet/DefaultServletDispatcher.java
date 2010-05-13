@@ -43,18 +43,16 @@ public class DefaultServletDispatcher implements ServletDispatcher {
             RackEnvironment env = new ServletRackEnvironment(request);
             RackResponse rack_resp = app.call(env);
             Boolean isAsync = (Boolean)env.getAttribute("async");
-            System.out.println("isAsync " + isAsync);
             if ((isAsync == null) || (isAsync.booleanValue() == false)) {
               rack_resp.respond(new ServletRackResponseEnvironment(response));
             } else {
               // mark the request asynchronous and properly clean up.
-              //if (request.isAsyncSupported() == true){
+              if (request.isAsyncSupported() == true){
                  AsyncContext ctx = request.startAsync();
-              //} else {
-                System.out.println("Here3");
+              } else {
                 //we were asked to do async processing when we don't support it.
-                //throw new Exception("Request is within the scope of a filter or servlet that does not support asynchronous operations");
-              //}              
+                throw new Exception("Request is within the scope of a filter or servlet that does not support asynchronous operations");
+              }              
             }
         } catch (Exception re) {
             handleException(re, rackFactory, request, response);
